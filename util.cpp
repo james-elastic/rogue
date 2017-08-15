@@ -3,6 +3,8 @@
 #include <SDL2/SDL_image.h> // if used requires -lSDL2_image to the LDFLAGS
 #include <string>
 
+#include "util.h"
+
 SDL_Texture* loadTexture( std::string path,
 			  SDL_Renderer* gRenderer ) {
   //The final texture

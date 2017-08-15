@@ -7,8 +7,11 @@ EXE = snake
 
 all: $(EXE)
 
-$(EXE): util.o main.o
+$(EXE): error.o util.o main.o
 	$(CXX) $(LDFLAGS) $^ -o $@
+
+error.o: error.cpp
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 util.o: util.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
