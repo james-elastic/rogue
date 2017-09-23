@@ -39,7 +39,7 @@ SDL_Surface* gScreenSurface = NULL;
 LTexture gSnakeSurfaces[ SNAKE_SURFACE_TOTAL ];
 
 //Current displayed image
-SDL_Texture* gCurrentTexture = NULL;
+LTexture gCurrentTexture;
 
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
@@ -85,32 +85,32 @@ bool init()
   }
 
   //Instantiate classes for each sprite map we need
-  for(int i = 0; i < SNAKE_SURFACE_TOTAL; ++i) {
-    gSnakeSurfaces[i] = LTexture( gRenderer );
-  }
+  //for(int i = 0; i < SNAKE_SURFACE_TOTAL; ++i) {
+  //  gSnakeSurfaces[i] = LTexture();
+  //}
 
   return true;
 }
 
 bool loadMedia()
 {
-  gSnakeSurfaces[ SNAKE_SURFACE_HEAD ] = loadTexture( "img/head.png", gRenderer );
-  if( gSnakeSurfaces[ SNAKE_SURFACE_HEAD ] == NULL ) {
+  gSnakeSurfaces[ SNAKE_SURFACE_HEAD ].loadFromFile( gRenderer, "img/head.png" );
+  /*if( gSnakeSurfaces[ SNAKE_SURFACE_HEAD ] == NULL ) {
     handle_error( LOADMEDIA_LOAD_TEXTURE, "img/head.png" );
     return false;
-  }
+    }*/
 
-  gSnakeSurfaces[ SNAKE_SURFACE_BODY ] = loadTexture( "img/scale.png", gRenderer );
-  if( gSnakeSurfaces[ SNAKE_SURFACE_BODY ] == NULL ) {
+  gSnakeSurfaces[ SNAKE_SURFACE_BODY ].loadFromFile( gRenderer, "img/scale.png" );
+  /*if( gSnakeSurfaces[ SNAKE_SURFACE_BODY ] == NULL ) {
     handle_error( LOADMEDIA_LOAD_TEXTURE, "img/scale.png" );
     return false;
-  }
+    }*/
 
-  gSnakeSurfaces[ SNAKE_SURFACE_TAIL ] = loadTexture( "img/tail.png", gRenderer );
-  if( gSnakeSurfaces[ SNAKE_SURFACE_TAIL ] == NULL ) {
+  gSnakeSurfaces[ SNAKE_SURFACE_TAIL ].loadFromFile( gRenderer, "img/tail.png" );
+  /*if( gSnakeSurfaces[ SNAKE_SURFACE_TAIL ] == NULL ) {
     handle_error( LOADMEDIA_LOAD_TEXTURE, "img/tail.png" );
     return false;
-  }
+    }*/
 
   return true;
 }
@@ -119,8 +119,7 @@ void close()
 {
   //Free loaded images
   for(int i = 0; i < SNAKE_SURFACE_TOTAL; ++i) {
-    SDL_DestroyTexture( gSnakeSurfaces[i] );
-    gSnakeSurfaces[i] = NULL;
+    gSnakeSurfaces[i].free();
   }
 
   //Destroy window    
@@ -214,11 +213,13 @@ int main( int argc, char* args[] )
 
     SDL_RenderSetViewport( gRenderer, &vp_scoreboard );
     //Render texture to screen
-    SDL_RenderCopy( gRenderer, gCurrentTexture, NULL, NULL );
-
+    //SDL_RenderCopy( gRenderer, gCurrentTexture, NULL, NULL );
+    gCurrentTexture.render( gRenderer, 0, 0 );
+    
     SDL_RenderSetViewport( gRenderer, &vp_game );
-    SDL_RenderCopy( gRenderer, gCurrentTexture, NULL, NULL );
-
+    //SDL_RenderCopy( gRenderer, gCurrentTexture, NULL, NULL );
+    gCurrentTexture.render( gRenderer, 0, 0 );
+    
     //Update screen
     SDL_RenderPresent( gRenderer );
   }

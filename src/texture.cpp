@@ -4,13 +4,12 @@
 
 #include "texture.h"
 
-LTexture::LTexture( SDL_Renderer* gRenderer )
+LTexture::LTexture()
 {
   //Initialize
   mTexture = NULL;
   mWidth = 0;
   mHeight = 0;
-  mRenderer = gRenderer;
 }
 
 LTexture::~LTexture()
@@ -19,10 +18,35 @@ LTexture::~LTexture()
   free();
 }
 
-bool LTexture::loadFromFile( std::string path,
+bool LTexture::loadFromFile( SDL_Renderer* renderer,
+			     std::string path ) {
+  return loadFromFile(renderer,
+		      path,
+		      0xFF,
+		      0xFF,
+		      0xFF,
+		      SDL_FALSE);
+}
+
+bool LTexture::loadFromFile( SDL_Renderer* renderer,
+			     std::string path,
 			     uint8_t red,
 			     uint8_t green,
-			     uint8_t blue) {
+			     uint8_t blue ) {
+  return loadFromFile(renderer,
+		      path,
+		      red,
+		      green,
+		      blue,
+		      SDL_TRUE);
+}
+
+bool LTexture::loadFromFile( SDL_Renderer* renderer,
+			     std::string path,
+			     uint8_t red,
+			     uint8_t green,
+			     uint8_t blue,
+			     bool enable_keying ) {
   //Get rid of preexisting texture
   free();
 
@@ -38,14 +62,14 @@ bool LTexture::loadFromFile( std::string path,
   else {
     //Color key image
     SDL_SetColorKey( loadedSurface,
-		     SDL_TRUE,
+		     enable_keying,
 		     SDL_MapRGB( loadedSurface->format,
 				 red,
 				 green,
 				 blue ) );
 
     //Create texture from surface pixels
-    newTexture = SDL_CreateTextureFromSurface( mRenderer, loadedSurface );
+    newTexture = SDL_CreateTextureFromSurface( renderer, loadedSurface );
     if( newTexture == NULL ) {
       printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
     }
@@ -74,10 +98,10 @@ void LTexture::free() {
   }
 }
 
-void LTexture::render( int x, int y ) {
+void LTexture::render( SDL_Renderer* renderer, int x, int y ) {
   //Set rendering space and render to screen
   SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-  SDL_RenderCopy( mRenderer, mTexture, NULL, &renderQuad );
+  SDL_RenderCopy( renderer, mTexture, NULL, &renderQuad );
 }
 
 int LTexture::getWidth() {
