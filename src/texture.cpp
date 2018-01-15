@@ -83,8 +83,9 @@ bool LTexture::loadFromFile( SDL_Renderer* renderer,
     SDL_FreeSurface( loadedSurface );
   }
 
-  //Return success
   mTexture = newTexture;
+  
+  //Return success
   return mTexture != NULL;
 }
 

@@ -1,5 +1,5 @@
 // Including core SDL libraries
-#include <SDL2/SDL.h> // if used required -lSDL2 to the LDFLAGS
+#include <SDL2/SDL.h> // if used requires -lSDL2 to the LDFLAGS
 #include <SDL2/SDL_image.h> // if used requires -lSDL2_image to the LDFLAGS
 //#include <SDL2/SDL_ttf.h>
 //#include <SDL2/SDL_mixer.h>
@@ -11,6 +11,7 @@
 #include "util.h"
 #include "error.h"
 #include "texture.h"
+#include "constants.h"
 
 //Starts up SDL and creates window
 bool init();
@@ -21,16 +22,7 @@ bool loadMedia();
 //Frees media and shuts down SDL
 void close();
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
-const int SCOREBOARD_WIDTH = SCREEN_WIDTH;
-const int SCOREBOARD_HEIGHT = 20;
-
-const int GAME_BORDER = 10; // 10px border
-const int GAME_WIDTH = SCREEN_WIDTH - GAME_BORDER;
-const int GAME_HEIGHT = SCREEN_HEIGHT - SCOREBOARD_HEIGHT - GAME_BORDER;
+int gX, gY = 0;
 
 //The surface contained by the window
 SDL_Surface* gScreenSurface = NULL;
@@ -68,7 +60,8 @@ bool init()
   }
 
   //Create renderer for window
-  gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED );
+  gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED |
+				  SDL_RENDERER_PRESENTVSYNC );
   if( gRenderer == NULL ) {
     handle_error( INIT_SDL_CREATE_RENDERER, SDL_GetError() );
     return false;
@@ -94,19 +87,19 @@ bool init()
 
 bool loadMedia()
 {
-  gSnakeSurfaces[ SNAKE_SURFACE_HEAD ].loadFromFile( gRenderer, "img/head.png" );
+  gSnakeSurfaces[ SNAKE_SURFACE_HEAD ].loadFromFile( gRenderer, "img/head.png", 0xFF, 0xFF, 0xFF );
   /*if( gSnakeSurfaces[ SNAKE_SURFACE_HEAD ] == NULL ) {
     handle_error( LOADMEDIA_LOAD_TEXTURE, "img/head.png" );
     return false;
     }*/
 
-  gSnakeSurfaces[ SNAKE_SURFACE_BODY ].loadFromFile( gRenderer, "img/scale.png" );
+  gSnakeSurfaces[ SNAKE_SURFACE_BODY ].loadFromFile( gRenderer, "img/scale.png", 0xFF, 0xFF, 0xFF );
   /*if( gSnakeSurfaces[ SNAKE_SURFACE_BODY ] == NULL ) {
     handle_error( LOADMEDIA_LOAD_TEXTURE, "img/scale.png" );
     return false;
     }*/
 
-  gSnakeSurfaces[ SNAKE_SURFACE_TAIL ].loadFromFile( gRenderer, "img/tail.png" );
+  gSnakeSurfaces[ SNAKE_SURFACE_TAIL ].loadFromFile( gRenderer, "img/tail.png", 0xFF, 0xFF, 0xFF );
   /*if( gSnakeSurfaces[ SNAKE_SURFACE_TAIL ] == NULL ) {
     handle_error( LOADMEDIA_LOAD_TEXTURE, "img/tail.png" );
     return false;
@@ -173,38 +166,40 @@ int main( int argc, char* args[] )
   //While application is running
   while( !quit ) {
     //Handle events on queue
-    while( SDL_PollEvent( &e ) != 0 ) {
+    //while( SDL_PollEvent( &e ) != 0 ) {
+    SDL_PollEvent( &e );
       //User requests quit
       if( e.type == SDL_QUIT ) {
 	quit = true;
       }
       //User presses a key
-      else if( e.type == SDL_KEYDOWN ) {
+      if( e.type == SDL_KEYDOWN ) {
 	//Select surfaces based on key press
 	switch( e.key.keysym.sym ) {
-	  /*
-	    case SDLK_UP:
-	    gCurrentTexture = gKeyPressSurfaces[ KEY_PRESS_SURFACE_UP ];
-	    break;
+	case SDLK_UP:
+	  gY -= MOVE_SPEED;
+	  break;
 
-	    case SDLK_DOWN:
-	    gCurrentTexture = gKeyPressSurfaces[ KEY_PRESS_SURFACE_DOWN ];
-	    break;
-	  */
+	case SDLK_DOWN:
+	  gY += MOVE_SPEED;
+	  break;
+
 	case SDLK_LEFT:
-	  gCurrentTexture = gSnakeSurfaces[ SNAKE_SURFACE_HEAD ];
+	  gX -= MOVE_SPEED;
+	  //gCurrentTexture = gSnakeSurfaces[ SNAKE_SURFACE_HEAD ];
 	  break;
 
 	case SDLK_RIGHT:
-	  gCurrentTexture = gSnakeSurfaces[ SNAKE_SURFACE_TAIL ];
+	  gX += MOVE_SPEED;
+	  //gCurrentTexture = gSnakeSurfaces[ SNAKE_SURFACE_TAIL ];
 	  break;
 
 	default:
-	  gCurrentTexture = gSnakeSurfaces[ SNAKE_SURFACE_BODY ];
+	  //gCurrentTexture = gSnakeSurfaces[ SNAKE_SURFACE_BODY ];
 	  break;
 	}
       }
-    }
+      //}
 
     //SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
     SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0x00 );
@@ -214,11 +209,11 @@ int main( int argc, char* args[] )
     SDL_RenderSetViewport( gRenderer, &vp_scoreboard );
     //Render texture to screen
     //SDL_RenderCopy( gRenderer, gCurrentTexture, NULL, NULL );
-    gCurrentTexture.render( gRenderer, 0, 0 );
-    
+    //gCurrentTexture.render( gRenderer, 0, 0 );
+
+    // Draw the snake game updates to this viewport
     SDL_RenderSetViewport( gRenderer, &vp_game );
-    //SDL_RenderCopy( gRenderer, gCurrentTexture, NULL, NULL );
-    gCurrentTexture.render( gRenderer, 0, 0 );
+    gCurrentTexture.render( gRenderer, gX, gY );
     
     //Update screen
     SDL_RenderPresent( gRenderer );
