@@ -1,0 +1,15 @@
+#include <SDL2/SDL.h>
+
+class Joystick {
+public:
+  Joystick();
+  
+  ~Joystick();
+
+  void InitJoysticks();
+  static int NumJoysticks();
+  void free();
+private:
+  int MAX_JOYSTICKS = 4;
+  SDL_Joystick *joystick[];
+};

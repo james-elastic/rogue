@@ -1,0 +1,10 @@
+class Error {
+public:
+  Error();
+  ~Error();
+  
+  static void Log(const char *errStr);
+  static void Log(int category,
+		  const char *errStr);
+private:
+};

@@ -9,4 +9,4 @@ const int GAME_BORDER = 10; // 10px border
 const int GAME_WIDTH = SCREEN_WIDTH - GAME_BORDER;
 const int GAME_HEIGHT = SCREEN_HEIGHT - SCOREBOARD_HEIGHT - GAME_BORDER;
 
-const int MOVE_SPEED = 2;
+const int MOVE_SPEED = 4;
