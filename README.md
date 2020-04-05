@@ -1,2 +1,2 @@
-# snake
-A snake clone built with the SDL library
+# Rogue
+A basic rogue-like game built with SDL2
