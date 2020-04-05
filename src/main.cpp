@@ -144,7 +144,7 @@ int main( int argc, char* args[] )
     //Log::Error(SDL_GetError());
     //handle_error( MAIN_INIT, NULL );
     //return MAIN_INIT;
-    return 0;
+    return -1;
   }
 
   //Load media
@@ -152,7 +152,7 @@ int main( int argc, char* args[] )
     //Log::Error(SDL_GetError());
     //handle_error ( MAIN_LOAD_MEDIA, NULL );
     //return MAIN_LOAD_MEDIA;
-    return 0;
+    return -1;
   }
 
   //Main loop flag
